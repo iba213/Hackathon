@@ -34,8 +34,11 @@ export default function CameraFeed() {
     detections.forEach((det) => {
       const [x, y, w, h] = det.bbox;
 
-      ctx.strokeStyle = "#00FFFF";
+      ctx.strokeStyle = "rgba(0,255,255,0.9)";
+      ctx.shadowColor = "cyan";
+      ctx.shadowBlur = 10;
       ctx.lineWidth = 3;
+
       ctx.strokeRect(x, y, w, h);
 
       ctx.fillStyle = "#00FFFF";
@@ -62,7 +65,8 @@ export default function CameraFeed() {
 
   return (
     <div className="flex flex-col items-center">
-      <div className="relative flex justify-center">
+      <div className="relative flex justify-center mt-6 border border-cyan-500/30 rounded-xl shadow-[0_0_25px_rgba(0,255,255,0.3)] p-2 backdrop-blur-md">
+
         <video ref={videoRef} className="rounded-xl shadow-xl" />
         <canvas ref={canvasRef} className="absolute top-0 left-0" />
       </div>

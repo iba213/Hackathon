@@ -1,27 +1,34 @@
 import { useState, useEffect } from "react";
-import { pipeline } from "@xenova/transformers";
+import * as cocoSsd from "@tensorflow-models/coco-ssd";
+import "@tensorflow/tfjs";
 
 export default function useObjectDetection(videoRef) {
   const [detections, setDetections] = useState([]);
 
   useEffect(() => {
-    async function loadModel() {
-      console.log("Loading YOLO model...");
+    let model;
 
-      const model = await pipeline("object-detection", "Xenova/yolov8n");
-
-      console.log("YOLO model ready!");
+    async function start() {
+      console.log("Loading COCO-SSD model...");
+      model = await cocoSsd.load();
+      console.log("Model ready!");
 
       setInterval(async () => {
         if (!videoRef.current) return;
 
-        const result = await model(videoRef.current);
+        const predictions = await model.detect(videoRef.current);
 
-        setDetections(result);
-      }, 500); // Every 500ms
+        setDetections(
+          predictions.map((p) => ({
+            class: p.class,
+            score: p.score,
+            bbox: p.bbox, // [x, y, width, height]
+          }))
+        );
+      }, 500);
     }
 
-    loadModel();
+    start();
   }, []);
 
   return detections;
